@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Arianita:3</title>
+    <link rel="icon" type="image/png" href="images/favicon.png" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        overflow: hidden; /* Prevent scrolling */
+        cursor: url('images/cursor.png'), auto !important;
+      }
+
+      * {
+        cursor: url('images/cursor.png'), auto !important;
+      }
+
+      .sparkle {
+        position: fixed;
+        pointer-events: none;
+        z-index: 9999;
+      }
+
+      .script-font {
+        font-family: "Great Vibes", cursive;
+      }
+
+      /* Floating Hearts Animation Background */
+      .floating-heart {
+        position: absolute;
+        color: rgba(255, 182, 193, 0.6);
+        animation: float 15s infinite linear;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(100vh) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-10vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+
+      /* Fade transitions */
+      .fade-in {
+        animation: fadeIn 1.5s ease-in forwards;
+      }
+
+      .fade-out {
+        animation: fadeOut 1s ease-out forwards;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeOut {
+        from {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        to {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+      }
+
+      /* Heart Beat Animation */
+      .heartbeat {
+        animation: beat 1.2s infinite;
+      }
+
+      @keyframes beat {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        25% {
+          transform: scale(1.1);
+        }
+        50% {
+          transform: scale(1);
+        }
+        75% {
+          transform: scale(1.1);
+        }
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gradient-to-br from-pink-100 via-red-50 p-8 to-pink-200 h-screen w-screen flex flex-col items-center justify-start relative select-none pt-8"
+  >
+    <div id="hearts-container" class="absolute inset-0 overflow-hidden"></div>
+
+    <audio id="bg-music" loop hidden>
+        <source src="sounds/music.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="click-sound" hidden>
+        <source src="sounds/click.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sad-sound" hidden>
+        <source src="sounds/sad.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="laugh-sound" hidden>
+        <source src="sounds/laugh.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="yes-sound" hidden>
+        <source src="sounds/yes.mp3" type="audio/mpeg">
+    </audio>
+    
+    <div 
+      id="prank-overlay" 
+      class="hidden fixed inset-0 bg-black z-50 flex flex-col items-center justify-center opacity-0 transition-opacity duration-1000"
+    >
+        <img id="prank-image" src="" alt="prank skull" class="hidden w-96 h-96 mb-8 object-contain">
+        
+        <h1 id="prank-text" class="text-white text-3xl md:text-5xl font-bold text-center px-4 drop-shadow-lg">
+            ...
+        </h1>
+    </div>
+
+    <div
+      id="intro-heart"
+      class="w-24 h-24 mb-4 mt-32 heartbeat drop-shadow-md mx-auto"
+    >
+      <img src="images/heart.png" alt="heart" class="w-full h-full object-contain">
+    </div>
+    
+    <div
+      id="intro-card"
+      class="z-10 text-center w-auto max-w-[90vw] p-8 bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-pink-100 transition-all duration-700"
+    >
+      <h1 class="text-3xl text-pink-600 mb-6 font-semibold" id="intro-text">
+        Hola mi niña hermosa preciosa!
+      </h1>
+      <p class="text-gray-600 mb-8 hidden" id="intro-sub"></p>
+
+      <button
+        onclick="nextStep()"
+        class="bg-pink-500 hover:bg-pink-600 active:scale-90 duration-75 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 focus:outline-none ring-4 ring-pink-200"
+      >
+        Click Me
+      </button>
+    </div>
+
+    <div
+      id="us-image"
+      class="hidden w-80 h-auto mb-4 mx-auto rounded-3xl drop-shadow-lg overflow-hidden"
+    >
+      <img src="images/us.png" alt="us" class="w-full h-auto object-contain">
+    </div>
+    
+    <div
+      id="question-card"
+      class="hidden z-10 text-center w-auto max-w-[90vw] p-6 md:p-12 relative bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-pink-100 transition-all duration-700"
+    >
+      <h1 class="script-font text-5xl md:text-7xl text-pink-600 mb-4 leading-tight">
+        Will You Be My Valentine?
+      </h1>
+
+      <p class="text-gray-600 mb-10 text-lg md:text-xl">
+        La pregunta es...<br />Quieres pasar San Valentín conmigo mi bebita tan hermosa?<br /><br />Prometo que será un día lindo, hermoso, donde nos daremos amor<br />y cariño, muchas risas, y haremos que sea un día inolvidable!
+      </p>
+
+      <div class="flex justify-center gap-4 md:gap-8 items-center h-20">
+        <button
+          id="yes-btn"
+          onclick="handleYesClick()"
+          class="bg-green-500 hover:bg-green-600 active:scale-90 duration-75 text-white text-xl font-bold py-4 px-10 rounded-full shadow-lg transform transition ring-4 ring-green-200 z-20"
+        >
+          YES!
+        </button>
+      </div>
+    </div>
+
+    <div
+      id="success-card"
+      class="hidden my-auto z-10 text-center max-w-2xl p-8 bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl border-4 border-pink-300 fade-in"
+    >
+      <h2 class="script-font text-5xl md:text-7xl text-pink-600 mb-6">
+        :3
+      </h2>
+      <p class="text-xl text-gray-700 font-medium">
+        Muchas gracias por decir que si!<br />
+        Te amo muchisimo mi princesita hermosa! ❤️
+      </p>
+      <div class="mt-8 text-sm text-gray-400">
+        (Si decias que no me mataba...)
+      </div>
+    </div>
+
+    <script>
+      // --- Logic for the Proposal Flow ---
+
+      // ===== TEXTOS EDITABLES =====
+      const heyBeautifulText = "Hey Beautiful";
+      const subtitles = [
+        "Hola mi niñita tan preciosa, espero te haya ido muy bien en el trabajo:3\nQuiero que sepas que te amo muchisimo, y que siempre te amaré\npor nada en el mundo te dejaré de amar, asi que no pienses cosas malitas.\n\nPara mi lo eres todo mi niña bella, jamás olvides eso, eres el amor de mi vida\nde estas, y de todas las que vienen, eres lo que siempre quise, lo que siempre soñé<3",
+        "Ya casi 1 año de relación, como pasa el tiempo no mi niña bella?\nEn estas fechas el año pasado estabamos pasando por momentos super feos\npero mira como el tiempo puso todo en su lugar, y ahora estamos aquí!\n\nAhora vamos a pasar nuestro primer San Valentín juntitos, y será el primero de ambos\ny se me hace demasiado lindo saber que lo voy a pasar contigo mi muñequita preciosa.\n\nYa casi un año de relación, y espero que sean muchos más, porque yo quiero pasar toda mi vida contigo\ny no me imagino un futuro sin ti a mi lado, eres lo mejor que me ha pasado en la vida\ny quiero seguir haciéndote feliz cada día, quiero seguir amándote cada día, quiero seguir cuidándote cada día\nquiero seguir mimándote cada día, quiero seguir siendo tuyo cada día.",
+        "Me haces el hombre más feliz de todos, con tu amor, con tu forma de ser\ntu forma de demostrarme tu amor, de comportarte como una bebé (es mi cosa favorita)\ncon tus detalles, con tu rostro tan hermoso, tu carita que amo.\n\nSiempre estaré agradecido de lo que has hecho y haces por en mi en la actualidad\nnadie me ha tratado como tu me tratas, nadie ha sido tan detallista conmigo como tú\nde verdad siempre estaré muy agradecido contigo por todo lo que has hecho, de verdad estoy muy orgulloso\nde ti, y sobre todo sorprendido, de todo lo que has hecho, hasta has hablando con mi papá jsjsjs\ny en 1 semanita me vendrás a ver, y creeme que jamas nadie ha hecho algo así por mi, y de verdad gracias, gracais y gracias!",
+        "Y ahora te tengo una pregunta, quiero hacerte una pregunta y que seas totalmente sincera\ntu respuesta será todo para mi y para lo nuestro, así que más te vale responder bien porfavor.\n\nSi respondes mal te juro que de verdad me voy a sentir terrible, y NO TE VOY A PERDONAR NUNCA EN LA VIDA."
+      ];
+      // ==============================
+
+      let step = 0;
+      const messages = [
+        heyBeautifulText + "...",
+        "Casi 1 año...",
+        "Me haces muuuu feliz>_<",
+        "Una preguntita:3",
+      ];
+
+      const introCard = document.getElementById("intro-card");
+      const introHeart = document.getElementById("intro-heart");
+      const introText = document.getElementById("intro-text");
+      const introSub = document.getElementById("intro-sub");
+      const questionCard = document.getElementById("question-card");
+      const usImage = document.getElementById("us-image");
+      const successCard = document.getElementById("success-card");
+      const yesBtn = document.getElementById("yes-btn");
+      
+      const prankOverlay = document.getElementById("prank-overlay");
+      const prankText = document.getElementById("prank-text");
+      const prankImage = document.getElementById("prank-image"); 
+
+      // --- CONFIGURACIÓN DE AUDIO ---
+      const bgMusic = document.getElementById("bg-music");
+      const clickSound = document.getElementById("click-sound");
+      const sadSound = document.getElementById("sad-sound");
+      const laughSound = document.getElementById("laugh-sound");
+      const yesSound = document.getElementById("yes-sound");
+
+      // Establecer volúmenes iniciales
+      bgMusic.volume = 0.6;   // 60%
+      clickSound.volume = 0.7; // 70%
+      sadSound.volume = 0.7;   // 70%
+      laughSound.volume = 0.7; // 70%
+      yesSound.volume = 0.7;   // 70%
+
+      let musicStarted = false;
+
+      // Listener global para asegurar que la música arranque al primer click en CUALQUIER lado
+      document.body.addEventListener('click', () => {
+        if (!musicStarted) {
+            bgMusic.play().then(() => {
+                musicStarted = true;
+            }).catch(e => console.log("Audio play blocked", e));
+        }
+      }, { once: true }); // Se ejecuta solo una vez
+
+      function playClickSound() {
+          // Reinicia el audio por si se clickea rápido y lo reproduce
+          clickSound.currentTime = 0;
+          clickSound.play();
+      }
+
+      window.addEventListener('load', () => {
+        introSub.innerText = subtitles[0];
+        introSub.classList.remove("hidden");
+      });
+
+      function nextStep() {
+        playClickSound(); // Reproducir sonido de click
+
+        step++;
+        introText.classList.add("fade-out");
+
+        setTimeout(() => {
+          if (step < messages.length) {
+            introText.innerText = messages[step];
+            introText.classList.remove("fade-out");
+            introText.classList.add("fade-in");
+
+            if (step === 0) {
+              introSub.innerText = subtitles[0];
+              introSub.classList.remove("hidden");
+            } else if (step === 1) {
+              introSub.innerText = subtitles[step];
+              introSub.classList.remove("hidden");
+            } else if (step > 1 && step < messages.length) {
+              introSub.innerText = subtitles[step];
+            }
+          } else {
+            introCard.classList.add("hidden");
+            introHeart.classList.add("hidden");
+            questionCard.classList.remove("hidden");
+            usImage.classList.remove("hidden");
+            questionCard.classList.add("fade-in");
+          }
+        }, 500);
+      }
+
+      // --- LOGICA SECUENCIAL DE LA BROMA ---
+      function handleYesClick() {
+        playClickSound(); // Reproducir sonido de click
+
+        // 1. Cambiar botón a Rojo y "No" (Inmediato)
+        yesBtn.classList.remove("bg-green-500", "hover:bg-green-600");
+        yesBtn.classList.add("bg-red-600", "hover:bg-red-700");
+        yesBtn.innerText = "No";
+
+        // 2. Esperar 1.5 segundos
+        setTimeout(() => {
+            triggerPrankSequence();
+        }, 1500);
+      }
+
+      function triggerPrankSequence() {
+         // Mostrar Overlay Oscuro
+         prankOverlay.classList.remove("hidden");
+         
+         // Configurar imagen triste inicial
+         prankImage.src = "images/skull_sad.gif";
+         prankImage.classList.remove("hidden");
+
+         // --- AUDIO: Bajar volumen musica y tocar triste ---
+         bgMusic.volume = 0.2; // Bajar a 20%
+         sadSound.currentTime = 0;
+         sadSound.play();
+         // ------------------------------------------------
+
+         // Iniciar la transición de opacidad (fade in)
+         setTimeout(() => {
+             prankOverlay.classList.remove("opacity-0");
+         }, 10); 
+
+         // --- TIMELINE DE LA BROMA ---
+         
+         setTimeout(() => {
+             prankText.innerText = "Ok, está bien, me decepcionaste...";
+         }, 2000);
+
+         setTimeout(() => {
+             prankText.innerText = "Dijiste que no, que feo, despues de este detalle";
+         }, 5000);
+
+         setTimeout(() => {
+             prankText.innerText = "Creí que dirias que sí, se supone que somos novios:c";
+         }, 8000);
+
+         setTimeout(() => {
+             prankText.innerText = "Pensé que valorarias esto, pero ya veo que no, adios.";
+         }, 11000);
+
+         // --- CAMBIO DE IMAGEN Y AUDIO ---
+         setTimeout(() => {
+             // Detener sonido triste y tocar risa
+             sadSound.pause();
+             laughSound.currentTime = 0;
+             laughSound.play();
+             
+             prankImage.src = "images/skull_laugh.gif"; 
+             prankText.innerText = "MENTIRA, ES UNA BROMA MI BB JIJIJI";
+         }, 14000);
+
+         setTimeout(() => {
+             prankText.innerText = "HAS SIDO PAPU TROLLEADA POR EL REY DEL TROLLEO 😳😈👻😎";
+         }, 17000);
+
+         // Terminar broma y mostrar éxito
+         setTimeout(() => {
+             // Restaurar volumen musica
+             bgMusic.volume = 0.6;
+
+             // Fade out overlay
+             prankOverlay.classList.add("opacity-0");
+             
+             // Cuando termine la transición (1s), ocultarlo y resetear
+             setTimeout(() => {
+                 prankOverlay.classList.add("hidden");
+                 prankImage.classList.add("hidden"); 
+                 acceptProposal(); 
+             }, 1000);
+         }, 20000);
+      }
+
+      function acceptProposal() {
+        questionCard.classList.add("hidden");
+        usImage.classList.add("hidden");
+        successCard.classList.remove("hidden");
+
+        // Reproducir sonido de celebración
+        yesSound.currentTime = 0;
+        yesSound.play();
+
+        launchConfetti();
+        let duration = 8 * 1000; 
+        let animationEnd = Date.now() + duration;
+
+        let interval = setInterval(function () {
+          let timeLeft = animationEnd - Date.now();
+          if (timeLeft <= 0) {
+            return clearInterval(interval);
+          }
+          launchConfetti();
+        }, 1000);
+      }
+
+      function launchConfetti() {
+        confetti({
+          particleCount: 60, 
+          spread: 80,        
+          origin: { y: 0.6 },
+          colors: ["#ff69b4", "#9333ea", "#ffffff"],
+          shapes: ["heart"], 
+        });
+      }
+
+      // --- Background Floating Hearts Logic ---
+      function createFloatingHeart() {
+        const heart = document.createElement("div");
+        heart.classList.add("floating-heart");
+        heart.innerHTML = '<img src="images/heart.png" alt="heart" style="width: 100%; height: 100%; object-fit: contain;">';
+
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.fontSize = Math.random() * 8 + 4 + "px";
+        heart.style.animationDuration = Math.random() * 3 + 2 + "s"; 
+
+        document.getElementById("hearts-container").appendChild(heart);
+        setTimeout(() => {
+          heart.remove();
+        }, 20000);
+      }
+
+      setInterval(createFloatingHeart, 1500);
+
+      // --- Cursor Sparkle Effect ---
+      document.addEventListener("mousemove", (e) => {
+        if (Math.random() > 0.3) {
+          createSparkle(e.clientX, e.clientY);
+        }
+      });
+
+      function createSparkle(x, y) {
+        const sparkle = document.createElement("div");
+        sparkle.classList.add("sparkle");
+        const img = document.createElement("img");
+        img.src = "images/glitter.png";
+        img.style.width = "30px";
+        img.style.height = "30px";
+        sparkle.appendChild(img);
+        sparkle.style.left = x + "px";
+        sparkle.style.top = y + "px";
+        sparkle.style.opacity = "1";
+
+        document.body.appendChild(sparkle);
+
+        let opacity = 1;
+        let offsetY = 0;
+        const interval = setInterval(() => {
+          opacity -= 0.1;
+          offsetY -= 2;
+          sparkle.style.opacity = opacity;
+          sparkle.style.transform = `translateY(${offsetY}px)`;
+
+          if (opacity <= 0) {
+            clearInterval(interval);
+            sparkle.remove();
+          }
+        }, 3);
+      }
+    </script>
+  </body>
+</html>
